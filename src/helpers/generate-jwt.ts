@@ -8,7 +8,7 @@ export const generarJWT = (uid = '') => {
         }, (err, token) => {
             if (err) {
                 console.log(err);
-                reject('The token can be generated');
+                reject(`The token can't be generated`);
             } else {
                 resolve(token);
             }

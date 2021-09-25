@@ -3,16 +3,14 @@ import jwt from 'jsonwebtoken';
 import User from "../models/User";
 
 
-export const validarJWT = async (req: Request, res: Response, next: NextFunction) => {
+export const validateJWT = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.header('Authorization');
-    console.log(token)
     if (!token) {
         return res.status(401).send({
             msg: 'There is no token in this petition'
         });
     }
     try {
-        const payload = jwt.verify(token, process.env.SECRETORPUBLICKEY || "");
         const response: any = jwt.verify(token, process.env.SECRETORPUBLICKEY || "");
         const user = await User.findById(response.uid);
 
