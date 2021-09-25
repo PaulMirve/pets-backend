@@ -1,6 +1,7 @@
 import express from 'express';
+import cors from 'cors';
 import { dbConnection } from '../database/config';
-import routes from '../routes'
+import routes from '../routes';
 
 export default class Server {
     private app;
@@ -23,6 +24,7 @@ export default class Server {
     }
 
     middlewares = () => {
+        this.app.use(cors());
         this.app.use(express.json());
     }
 
