@@ -1,4 +1,6 @@
 import express from 'express';
+import { dbConnection } from '../database/config';
+import routes from '../routes'
 
 export default class Server {
     private app;
@@ -8,8 +10,25 @@ export default class Server {
         this.app = express();
         this.port = process.env.PORT;
         this.paths = {
-            users: '/api/users'
+            users: '/api/users',
+            auth: '/api/auth'
         }
+        this.dbConnect();
+        this.middlewares();
+        this.routes();
+    }
+
+    dbConnect = async () => {
+        await dbConnection();
+    }
+
+    middlewares = () => {
+        this.app.use(express.json());
+    }
+
+    routes = () => {
+        this.app.use(this.paths.users, routes.userRoutes);
+        this.app.use(this.paths.auth, routes.authRoutes);
     }
 
     listen = () => {

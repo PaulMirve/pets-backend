@@ -1,0 +1,37 @@
+import { NextFunction, Request, Response } from "express";
+import jwt from 'jsonwebtoken';
+import User from "../models/User";
+
+
+export const validarJWT = async (req: Request, res: Response, next: NextFunction) => {
+    const token = req.header('Authorization');
+    console.log(token)
+    if (!token) {
+        return res.status(401).send({
+            msg: 'There is no token in this petition'
+        });
+    }
+    try {
+        const payload = jwt.verify(token, process.env.SECRETORPUBLICKEY || "");
+        const response: any = jwt.verify(token, process.env.SECRETORPUBLICKEY || "");
+        const user = await User.findById(response.uid);
+
+        if (!user) {
+            return res.status(401).json({
+                msg: `Invalid user - it doesn't exists in the database`
+            });
+        }
+        if (!user.state) {
+            return res.status(401).json({
+                msg: `Invalid user - state is false`
+            });
+        }
+        req.currentUser = user;
+        next();
+    } catch (error) {
+        return res.status(401).send({
+            msg: 'Invalid token'
+        });
+    }
+
+}
