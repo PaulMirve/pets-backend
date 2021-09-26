@@ -6,6 +6,7 @@ export default interface Comment extends Document {
     comment: string,
     dateCreated: Date,
     likeCount: number,
+    likes: User[],
     user: User,
     post: Post,
     active: boolean

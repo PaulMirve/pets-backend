@@ -5,7 +5,8 @@ export default interface Post extends Document {
     description: string,
     dateCreated: Date,
     img: string,
-    likeCount: number
+    likeCount: number,
+    likes: User[]
     user: User,
-    active: true
+    active: boolean
 }

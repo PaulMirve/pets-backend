@@ -39,7 +39,7 @@ export const getUser = async (req: Request, res: Response) => {
 
 export const putUser = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { id: userId, google, email, ...rest }: IUser = req.body;
+    const { _id, google, email, ...rest }: IUser = req.body;
     if (rest.password) {
         rest.password = bcryptjs.hashSync(rest.password, bcryptjs.genSaltSync());
     }

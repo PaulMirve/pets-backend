@@ -30,3 +30,35 @@ export const postPost = async (req: Request, res: Response) => {
         res.status(500).json(error);
     }
 }
+
+export const getPosts = async (req: Request, res: Response) => {
+    const { limit = 10, offset = 0 } = req.query;
+    const [count, posts] = await Promise.all([
+        Post.countDocuments({ active: true }),
+        Post.find({ active: true }).skip(Number(offset)).limit(Number(limit))
+    ]);
+
+    res.json({
+        count,
+        posts
+    });
+}
+
+export const getPost = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const post = await Post.findById(id);
+    res.json(post);
+}
+
+export const putPost = async (req: Request, res: Response) => {
+    const { _id, dateCreated, likes, user, img, ...data }: IPost = req.body
+    const { id } = req.params;
+    const post = await Post.findByIdAndUpdate(id, data, { new: true });
+    res.json(post);
+}
+
+export const deletePost = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const post = await Post.findByIdAndUpdate(id, { active: false }, { new: true });
+    res.json(post);
+}
