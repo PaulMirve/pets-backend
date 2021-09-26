@@ -1,1 +1,0 @@
-Folder to add all the middlewares of our routes

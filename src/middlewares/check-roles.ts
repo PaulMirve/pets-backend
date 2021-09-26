@@ -7,5 +7,6 @@ export const userHasRole = (roles: string[]) => {
                 message: `The service requires one of the next roles ${roles}`
             });
         }
+        next();
     }
 }
