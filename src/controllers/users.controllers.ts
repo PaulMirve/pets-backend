@@ -20,8 +20,8 @@ export const postUser = async (req: Request, res: Response): Promise<void> => {
 
 export const getUsers = async (req: Request, res: Response) => {
     const [count, users] = await Promise.all([
-        User.countDocuments({ state: true }),
-        await User.find({ state: true })
+        User.countDocuments({ active: true }),
+        await User.find({ active: true })
     ]);
 
     res.json({
@@ -49,6 +49,6 @@ export const putUser = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const user = await User.findByIdAndUpdate(id, { state: false }, { new: true });
+    const user = await User.findByIdAndUpdate(id, { active: false }, { new: true });
     res.json(user);
 }

@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { dbConnection } from '../database/config';
 import routes from '../routes';
+import fileUpload from 'express-fileupload';
 
 export default class Server {
     private app;
@@ -12,7 +13,8 @@ export default class Server {
         this.port = process.env.PORT;
         this.paths = {
             users: '/api/users',
-            auth: '/api/auth'
+            auth: '/api/auth',
+            posts: '/api/posts'
         }
         this.dbConnect();
         this.middlewares();
@@ -26,14 +28,20 @@ export default class Server {
     middlewares = () => {
         this.app.use(cors());
         this.app.use(express.json());
+        this.app.use(fileUpload({
+            useTempFiles: true,
+            tempFileDir: '/tmp/',
+            createParentPath: true
+        }));
     }
 
     routes = () => {
         this.app.use(this.paths.users, routes.userRoutes);
         this.app.use(this.paths.auth, routes.authRoutes);
+        this.app.use(this.paths.posts, routes.postRoutes);
     }
 
     listen = () => {
-        this.app.listen(this.port, () => console.log(`Server running on port ${process.env.PORT}`));
+        this.app.listen(this.port, () => console.log(`Server running on port ${this.port}`));
     }
 }

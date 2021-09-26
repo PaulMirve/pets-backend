@@ -1,9 +1,12 @@
 import User from './User';
 import Post from './Post';
-export default interface Comment {
+import { Document } from 'mongoose';
+
+export default interface Comment extends Document {
     comment: string,
     dateCreated: Date,
     likeCount: number,
     user: User,
-    post: Post
+    post: Post,
+    active: boolean
 }

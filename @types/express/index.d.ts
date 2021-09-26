@@ -6,4 +6,14 @@ declare global {
             currentUser: IUser
         }
     }
+    namespace NodeJS {
+        interface ProcessEnv {
+            PORT: string;
+            MONGODB_CONN: string;
+            SECRETORPUBLICKEY: string;
+            CLOUDINARY_CLOUD_NAME: string;
+            CLOUDINARY_API_KEY: string;
+            CLOUDINARY_API_SECRET: string;
+        }
+    }
 }

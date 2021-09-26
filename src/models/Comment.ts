@@ -28,6 +28,11 @@ const CommentSchema: Schema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Post',
         required: [true, 'The post id is needed']
+    },
+    active: {
+        type: Boolean,
+        required: true,
+        default: true
     }
 });
 

@@ -24,7 +24,7 @@ const UserSchema: Schema = new Schema({
         enum: ['ADMIN_ROLE', 'USER_ROLE'],
         default: 'USER_ROLE'
     },
-    state: {
+    active: {
         type: Boolean,
         default: true
     },
@@ -35,8 +35,7 @@ const UserSchema: Schema = new Schema({
 });
 
 UserSchema.methods.toJSON = function () {
-    const { _id, __v, password, ...data } = this.toObject();
-    data.uid = _id;
+    const { __v, password, ...data } = this.toObject();
     return data;
 }
 

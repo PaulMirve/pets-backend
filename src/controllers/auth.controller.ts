@@ -7,36 +7,36 @@ export const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     try {
-        const usuario = await User.findOne({ email });
-        if (!usuario) {
+        const user = await User.findOne({ email });
+        if (!user) {
             return res.status(400).json({
-                msg: 'Usuario o contraseña no validos'
+                msg: 'Invalid user or password'
             });
         }
 
-        if (!usuario.state) {
+        if (!user.active) {
             return res.status(400).json({
-                msg: 'Usuario o contraseña no validos'
+                msg: "The user isn't active"
             });
         }
 
-        const validPassword = bcryptjs.compareSync(password, usuario.password);
+        const validPassword = bcryptjs.compareSync(password, user.password);
         if (!validPassword) {
             return res.status(400).json({
-                msg: 'Usuario o contraseña no validosz'
+                msg: 'Invalid user or password'
             });
         }
 
-        const token = await generarJWT(usuario.id);
+        const token = await generarJWT(user.id);
 
         res.json({
-            usuario,
+            user,
             token
         });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-            msg: 'Algo salió mal. Hable con el administrador'
+            msg: 'Something went wrong. Talk with the administrator'
         });
     }
 }

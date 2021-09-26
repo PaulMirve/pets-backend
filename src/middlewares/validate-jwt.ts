@@ -11,7 +11,7 @@ export const validateJWT = async (req: Request, res: Response, next: NextFunctio
         });
     }
     try {
-        const response: any = jwt.verify(token, process.env.SECRETORPUBLICKEY || "");
+        const response: any = jwt.verify(token, process.env.SECRETORPUBLICKEY);
         const user = await User.findById(response.uid);
 
         if (!user) {
@@ -19,9 +19,9 @@ export const validateJWT = async (req: Request, res: Response, next: NextFunctio
                 msg: `Invalid user - it doesn't exists in the database`
             });
         }
-        if (!user.state) {
+        if (!user.active) {
             return res.status(401).json({
-                msg: `Invalid user - state is false`
+                msg: `Invalid user - the user isn't active`
             });
         }
         req.currentUser = user;

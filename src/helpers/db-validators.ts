@@ -11,7 +11,7 @@ export const userExists = async (id: string) => {
 
 export const isUserActive = async (id: string) => {
     const user = await User.findById(id);
-    if (user && user.state === false) {
+    if (user && user.active === false) {
         throw new Error(`The user isn't active`);
     }
 }

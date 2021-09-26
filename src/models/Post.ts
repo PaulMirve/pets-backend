@@ -28,7 +28,18 @@ const PostSchema: Schema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: [true, 'The user id is needed']
+    },
+    active: {
+        type: Boolean,
+        required: true,
+        default: true
     }
 });
+
+PostSchema.methods.toJSON = function () {
+    const { __v, ...data } = this.toObject();
+    return data;
+}
+
 
 export default model<Post>('Post', PostSchema);
