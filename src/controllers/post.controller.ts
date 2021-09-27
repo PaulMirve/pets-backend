@@ -35,7 +35,7 @@ export const getPosts = async (req: Request, res: Response) => {
     const { limit = 10, offset = 0 } = req.query;
     const [count, posts] = await Promise.all([
         Post.countDocuments({ active: true }),
-        Post.find({ active: true }).skip(Number(offset)).limit(Number(limit))
+        Post.find({ active: true }).skip(Number(offset)).limit(Number(limit)).populate('user', "username")
     ]);
 
     res.json({

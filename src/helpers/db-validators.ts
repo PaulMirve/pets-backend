@@ -24,6 +24,13 @@ export const emailExists = async (email: string = "") => {
     }
 }
 
+export const usernameExists = async (username: string = "") => {
+    const user = await User.findOne({ username });
+    if (user) {
+        throw new Error(`The username already exists`);
+    }
+}
+
 export const isUserActive = async (id: string) => {
     const user = await User.findById(id);
     if (user && user.active === false) {
