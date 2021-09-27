@@ -4,10 +4,11 @@ import User from "../models/User";
 import { generarJWT } from "../helpers/generate-jwt";
 
 export const login = async (req: Request, res: Response) => {
-    const { email, password } = req.body;
-
+    const { username: usernameOrPassword, password } = req.body;
     try {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({
+            $or: [{ username: usernameOrPassword }, { email: usernameOrPassword }]
+        });
         if (!user) {
             return res.status(400).json({
                 msg: 'Invalid user or password'
@@ -39,4 +40,9 @@ export const login = async (req: Request, res: Response) => {
             msg: 'Something went wrong. Talk with the administrator'
         });
     }
+}
+
+export const isAuthenticated = async (req: Request, res: Response) =>{
+    const user = req.currentUser;
+    res.json(user);
 }
