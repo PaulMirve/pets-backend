@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getPosts, postPost, getPost, putPost, deletePost } from '../controllers/post.controller';
+import { getPosts, postPost, getPost, putPost, deletePost, getPostByUser } from '../controllers/post.controller';
 import { validateJWT } from '../middlewares/validate-jwt';
 import { validateFields } from '../middlewares/validate-fields';
 import { check } from 'express-validator';
@@ -21,6 +21,8 @@ router.get('/:id', [
     check("id", "The id is not a valid id").isMongoId(),
     check("id").custom(postExists)
 ], getPost);
+
+router.get('/u/:username', [], getPostByUser);
 
 router.put('/:id', [
     validateJWT,

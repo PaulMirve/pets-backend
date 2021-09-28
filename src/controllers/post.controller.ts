@@ -3,6 +3,7 @@ import IPost from "../interfaces/Post";
 import Post from "../models/Post";
 import { v2 as cloudinary } from 'cloudinary';
 import { UploadedFile } from 'express-fileupload';
+import User from "../models/User";
 
 export const postPost = async (req: Request, res: Response) => {
     cloudinary.config({
@@ -17,8 +18,8 @@ export const postPost = async (req: Request, res: Response) => {
         if (req.files) {
             const file: UploadedFile = req.files["file"] as UploadedFile;
             const { tempFilePath } = file;
-
-            const { secure_url } = await cloudinary.uploader.upload(tempFilePath);
+            const { secure_url, public_id } = await cloudinary.uploader.upload(tempFilePath);
+            data.public_id = public_id;
             data.img = secure_url;
 
         }
@@ -35,7 +36,7 @@ export const getPosts = async (req: Request, res: Response) => {
     const { limit = 10, offset = 0 } = req.query;
     const [count, posts] = await Promise.all([
         Post.countDocuments({ active: true }),
-        Post.find({ active: true }).skip(Number(offset)).limit(Number(limit)).populate('user', "username")
+        Post.find({ active: true }).skip(Number(offset)).limit(Number(limit)).populate('user', "username -_id").sort({ dateCreated: 'desc' })
     ]);
 
     res.json({
@@ -49,6 +50,20 @@ export const getPost = async (req: Request, res: Response) => {
     const post = await Post.findById(id);
     res.json(post);
 }
+
+export const getPostByUser = async (req: Request, res: Response) => {
+    const { username } = req.params;
+    const _user = await User.findOne({ username });
+    let posts: IPost[] = [];
+    if (_user) {
+        posts = await Post.find({ user: _user._id });
+    } else {
+        res.status(400).json({ message: "Doesn't exists a user with that username" });
+    }
+
+    res.json(posts);
+}
+
 
 export const putPost = async (req: Request, res: Response) => {
     const { _id, dateCreated, likes, user, img, ...data }: IPost = req.body

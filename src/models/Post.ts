@@ -15,6 +15,10 @@ const PostSchema: Schema = new Schema({
         type: String,
         required: [true, 'Image is required']
     },
+    public_id: {
+        type: String,
+        required: [true, "Image public id is required"]
+    },
     likeCount: {
         type: Number,
         default: 0
@@ -37,7 +41,7 @@ const PostSchema: Schema = new Schema({
 });
 
 PostSchema.methods.toJSON = function () {
-    const { __v, ...data } = this.toObject();
+    const { _id, __v, ...data } = this.toObject();
     return data;
 }
 
