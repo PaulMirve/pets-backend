@@ -27,8 +27,8 @@ export const postPost = async (req: Request, res: Response) => {
             //     top: Math.trunc(Number(top))
             // }).toFile(outputImage);
             await sharp(tempFilePath).resize({
-                width: 1080,
-                height: 1080
+                width: 400,
+                height: 400
             }).toFile(outputImage);
             const { secure_url, public_id } = await cloudinary.uploader.upload(outputImage);
             post.public_id = public_id;
@@ -68,7 +68,7 @@ export const getPostByUser = async (req: Request, res: Response) => {
     const _user = await User.findOne({ username });
     let posts: IPost[] = [];
     if (_user) {
-        posts = await Post.find({ user: _user._id });
+        posts = await Post.find({ user: _user._id }).populate('user', 'username -_id');
     } else {
         res.status(400).json({ message: "Doesn't exists a user with that username" });
     }
