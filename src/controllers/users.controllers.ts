@@ -5,8 +5,8 @@ import IUser from '../interfaces/User';
 
 export const postUser = async (req: Request, res: Response): Promise<void> => {
 
-    const { name, lastName, password, email, role, username }: IUser = req.body;
-    const user = new User({ name, lastName, password, email, role, username });
+    const { name, lastName, password, email, username }: IUser = req.body;
+    const user = new User({ name, lastName, password, email, username });
     user.password = bcryptjs.hashSync(password, bcryptjs.genSaltSync());
 
     try {

@@ -17,6 +17,13 @@ export const postExists = async (id: string) => {
     }
 }
 
+export const postExistsByPublicId = async (public_id: string) => {
+    const post = await Post.findOne({ public_id });
+    if (!post) {
+        throw new Error(`The public id doesn't exists`);
+    }
+}
+
 export const emailExists = async (email: string = "") => {
     const user = await User.findOne({ email });
     if (user) {

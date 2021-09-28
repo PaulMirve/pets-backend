@@ -5,6 +5,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import { UploadedFile } from 'express-fileupload';
 import User from "../models/User";
 import sharp from 'sharp';
+import mongoose from 'mongoose';
 
 export const postPost = async (req: Request, res: Response) => {
     cloudinary.config({
@@ -20,16 +21,16 @@ export const postPost = async (req: Request, res: Response) => {
             let outputImage = "croppedImage.jpg";
             const file: UploadedFile = req.files["file"] as UploadedFile;
             const { tempFilePath } = file;
-            // await sharp(tempFilePath).extract({
-            //     width: Math.trunc(Number(width)),
-            //     height: Math.trunc(Number(height)),
-            //     left: Math.trunc(Number(left)),
-            //     top: Math.trunc(Number(top))
-            // }).toFile(outputImage);
-            await sharp(tempFilePath).resize({
+            await sharp(tempFilePath).extract({
                 width: Math.trunc(Number(width)),
-                height: Math.trunc(Number(height))
+                height: Math.trunc(Number(height)),
+                left: Math.trunc(Number(left)),
+                top: Math.trunc(Number(top))
             }).toFile(outputImage);
+            // await sharp(tempFilePath).resize({
+            //     width: Math.trunc(Number(width)),
+            //     height: Math.trunc(Number(height))
+            // }).toFile(outputImage);
             const { secure_url, public_id } = await cloudinary.uploader.upload(outputImage);
             post.public_id = public_id;
             post.img = secure_url;
@@ -48,7 +49,7 @@ export const getPosts = async (req: Request, res: Response) => {
     const { limit = 10, offset = 0 } = req.query;
     const [count, posts] = await Promise.all([
         Post.countDocuments({ active: true }),
-        Post.find({ active: true }).skip(Number(offset)).limit(Number(limit)).populate('user', "username -_id").sort({ dateCreated: 'desc' })
+        Post.find({ active: true }).skip(Number(offset)).limit(Number(limit)).populate('user', "username -_id").populate("likes", "username -_id").sort({ dateCreated: 'desc' })
     ]);
 
     res.json({
@@ -58,8 +59,8 @@ export const getPosts = async (req: Request, res: Response) => {
 }
 
 export const getPost = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const post = await Post.findById(id);
+    const { public_id } = req.params;
+    const post = await Post.findOne({ public_id }).populate("user", "username -_id");
     res.json(post);
 }
 
@@ -68,7 +69,7 @@ export const getPostByUser = async (req: Request, res: Response) => {
     const _user = await User.findOne({ username });
     let posts: IPost[] = [];
     if (_user) {
-        posts = await Post.find({ user: _user._id });
+        posts = await Post.find({ user: _user._id }).populate("user", "username -_id");
     } else {
         res.status(400).json({ message: "Doesn't exists a user with that username" });
     }
@@ -76,12 +77,24 @@ export const getPostByUser = async (req: Request, res: Response) => {
     res.json(posts);
 }
 
-
 export const putPost = async (req: Request, res: Response) => {
-    const { _id, dateCreated, likes, user, img, ...data }: IPost = req.body
-    const { id } = req.params;
-    const post = await Post.findByIdAndUpdate(id, data, { new: true });
+    const { _id, dateCreated, user, img, ...data }: IPost = req.body
+    const { public_id } = req.params;
+    const post = await Post.findOneAndUpdate({ public_id }, data, { new: true });
     res.json(post);
+}
+
+export const putLike = async (req: Request, res: Response) => {
+    const { public_id } = req.params;
+    const post = await Post.findOne({ public_id });
+    let currenPost: IPost;
+    if (post?.likes.some((user: mongoose.Types.ObjectId) => user.equals(req.currentUser._id))) {
+        currenPost = await Post.findOneAndUpdate({ public_id }, { $inc: { likeCount: -1 }, $pull: { likes: req.currentUser._id } }, { new: true });
+    } else {
+        currenPost = await Post.findOneAndUpdate({ public_id }, { $inc: { likeCount: 1 }, $addToSet: { likes: req.currentUser } }, { new: true });
+    }
+
+    res.json(currenPost);
 }
 
 export const deletePost = async (req: Request, res: Response) => {

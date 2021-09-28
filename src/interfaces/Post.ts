@@ -1,5 +1,6 @@
 import { Document } from 'mongoose';
 import User from './User';
+import mongoose from 'mongoose';
 
 export default interface Post extends Document {
     public_id: string,
@@ -7,7 +8,7 @@ export default interface Post extends Document {
     dateCreated: Date,
     img: string,
     likeCount: number,
-    likes: User[]
+    likes: mongoose.Types.ObjectId[]
     user: User,
     active: boolean
 }

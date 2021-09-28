@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { getPosts, postPost, getPost, putPost, deletePost, getPostByUser } from '../controllers/post.controller';
+import { getPosts, postPost, getPost, putPost, deletePost, getPostByUser, putLike } from '../controllers/post.controller';
 import { validateJWT } from '../middlewares/validate-jwt';
 import { validateFields } from '../middlewares/validate-fields';
 import { check } from 'express-validator';
 import { validateFile } from '../middlewares/validate-file';
 import { userHasRole } from '../middlewares/check-roles';
-import { postExists } from '../helpers/db-validators';
+import { postExists, postExistsByPublicId } from '../helpers/db-validators';
 const router = Router();
 
 router.post('/', [
@@ -17,21 +17,26 @@ router.post('/', [
 
 router.get('/', [], getPosts);
 
-router.get('/:id', [
-    check("id", "The id is not a valid id").isMongoId(),
-    check("id").custom(postExists)
+router.get('/:public_id', [
+    check("public_id").custom(postExistsByPublicId),
+    validateFields
 ], getPost);
 
 router.get('/u/:username', [], getPostByUser);
 
-router.put('/:id', [
+
+router.put('/:public_id', [
     validateJWT,
     userHasRole(["ADMIN_ROLE"]),
-    check("id", "The id is not a valid id").isMongoId(),
-    check("id").custom(postExists),
-    check('description', 'The description is requried').not().isEmpty(),
+    check("public_id").custom(postExistsByPublicId),
     validateFields
 ], putPost);
+
+router.put('/like/:public_id', [
+    validateJWT,
+    check("public_id").custom(postExistsByPublicId),
+    validateFields
+], putLike);
 
 router.delete('/:id', [
     validateJWT,
