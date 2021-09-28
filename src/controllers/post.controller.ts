@@ -4,6 +4,7 @@ import Post from "../models/Post";
 import { v2 as cloudinary } from 'cloudinary';
 import { UploadedFile } from 'express-fileupload';
 import User from "../models/User";
+import sharp from 'sharp';
 
 export const postPost = async (req: Request, res: Response) => {
     cloudinary.config({
@@ -12,18 +13,26 @@ export const postPost = async (req: Request, res: Response) => {
         api_secret: process.env.CLOUDINARY_API_SECRET
     });
 
-    const data: IPost = req.body;
-    data.user = req.currentUser;
+    const { description, width, height, left, top } = req.body;
+    const post = new Post({ description, user: req.currentUser });
     try {
         if (req.files) {
+            let outputImage = "croppedImage.jpg";
             const file: UploadedFile = req.files["file"] as UploadedFile;
+
             const { tempFilePath } = file;
+            // await sharp(tempFilePath).extract({
+            //     width,
+            //     height,
+            //     left,
+            //     top
+            // }).toFile(outputImage);
             const { secure_url, public_id } = await cloudinary.uploader.upload(tempFilePath);
-            data.public_id = public_id;
-            data.img = secure_url;
+            post.public_id = public_id;
+            post.img = secure_url;
 
         }
-        const post = new Post(data);
+
         await post.save();
         res.json(post);
     } catch (error) {
