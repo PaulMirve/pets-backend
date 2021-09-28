@@ -14,23 +14,23 @@ export const postPost = async (req: Request, res: Response) => {
         api_secret: process.env.CLOUDINARY_API_SECRET
     });
 
-    const { description, width, height, left, top } = req.body;
+    const { description } = req.body;
     const post = new Post({ description, user: req.currentUser });
     try {
         if (req.files) {
             let outputImage = "croppedImage.jpg";
             const file: UploadedFile = req.files["file"] as UploadedFile;
             const { tempFilePath } = file;
-            await sharp(tempFilePath).extract({
-                width: Math.trunc(Number(width)),
-                height: Math.trunc(Number(height)),
-                left: Math.trunc(Number(left)),
-                top: Math.trunc(Number(top))
-            }).toFile(outputImage);
-            // await sharp(tempFilePath).resize({
+            // await sharp(tempFilePath).extract({
             //     width: Math.trunc(Number(width)),
-            //     height: Math.trunc(Number(height))
+            //     height: Math.trunc(Number(height)),
+            //     left: Math.trunc(Number(left)),
+            //     top: Math.trunc(Number(top))
             // }).toFile(outputImage);
+            await sharp(tempFilePath).resize({
+                width: 400,
+                height: 400
+            }).toFile(outputImage);
             const { secure_url, public_id } = await cloudinary.uploader.upload(outputImage);
             post.public_id = public_id;
             post.img = secure_url;
@@ -49,7 +49,24 @@ export const getPosts = async (req: Request, res: Response) => {
     const { limit = 10, offset = 0 } = req.query;
     const [count, posts] = await Promise.all([
         Post.countDocuments({ active: true }),
-        Post.find({ active: true }).skip(Number(offset)).limit(Number(limit)).populate('user', "username -_id").populate("likes", "username -_id").sort({ dateCreated: 'desc' })
+        Post.find({ active: true }).skip(Number(offset)).limit(Number(limit))
+            .populate('user', "username -_id")
+            .populate("likes", "username -_id")
+            .populate({
+                path: "comments",
+                select: "comment",
+                populate: [
+                    {
+                        path: "user",
+                        select: "username -_id"
+                    },
+                    {
+                        path: "likes",
+                        select: "username -_id"
+                    }
+                ],
+            })
+            .sort({ dateCreated: 'desc' })
     ]);
 
     res.json({

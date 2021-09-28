@@ -8,7 +8,8 @@ export default interface Post extends Document {
     dateCreated: Date,
     img: string,
     likeCount: number,
-    likes: mongoose.Types.ObjectId[]
+    likes: mongoose.Types.ObjectId[],
+    comments: mongoose.Types.ObjectId[],
     user: User,
     active: boolean
 }

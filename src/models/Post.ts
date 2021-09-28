@@ -37,7 +37,12 @@ const PostSchema: Schema = new Schema({
         type: Boolean,
         required: true,
         default: true
-    }
+    },
+    comments: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Comment',
+        default: []
+    }]
 });
 
 PostSchema.methods.toJSON = function () {

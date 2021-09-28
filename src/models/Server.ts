@@ -4,6 +4,7 @@ import { dbConnection } from '../database/config';
 import routes from '../routes';
 import fileUpload from 'express-fileupload';
 
+
 export default class Server {
     private app;
     private port;
@@ -14,7 +15,8 @@ export default class Server {
         this.paths = {
             users: '/api/users',
             auth: '/api/auth',
-            posts: '/api/posts'
+            posts: '/api/posts',
+            comments: '/api/comments'
         }
         this.dbConnect();
         this.middlewares();
@@ -39,6 +41,7 @@ export default class Server {
         this.app.use(this.paths.users, routes.userRoutes);
         this.app.use(this.paths.auth, routes.authRoutes);
         this.app.use(this.paths.posts, routes.postRoutes);
+        this.app.use(this.paths.comments, routes.commentsRoutes);
     }
 
     listen = () => {
