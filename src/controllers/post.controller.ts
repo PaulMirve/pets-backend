@@ -22,8 +22,8 @@ export const postPost = async (req: Request, res: Response) => {
             const file: UploadedFile = req.files["file"] as UploadedFile;
             const { tempFilePath } = file;
             // await sharp(tempFilePath).extract({
-            //     width: Math.trunc(Number(width)),
-            //     height: Math.trunc(Number(height)),
+            //     width: Math.trunc(Number(1000)),
+            //     height: Math.trunc(Number(800)),
             //     left: Math.trunc(Number(left)),
             //     top: Math.trunc(Number(top))
             // }).toFile(outputImage);
