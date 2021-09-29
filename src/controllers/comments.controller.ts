@@ -11,9 +11,27 @@ export const postComment = async (req: Request, res: Response) => {
     const post = await Post.findOne({ public_id })
     data.post = post;
     const comment = new Comment(data);
-    await comment.save(error => {
-        post?.comments.push(comment._id);
-        post?.save();
-    });
-    res.json(comment);
+    await comment.save();
+    post?.comments.push(comment._id);
+    await post?.save().then(t => t.populate([
+        {
+            path: "comments",
+            select: "comment",
+            populate: [
+                {
+                    path: "user",
+                    select: "username -_id"
+                },
+                {
+                    path: "likes",
+                    select: "username -_id"
+                }
+            ],
+        },
+        {
+            path: "user",
+            select: "username -_id"
+        }
+    ]));
+    res.json(post);
 }
