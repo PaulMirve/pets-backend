@@ -86,7 +86,26 @@ export const getPostByUser = async (req: Request, res: Response) => {
     const _user = await User.findOne({ username });
     let posts: IPost[] = [];
     if (_user) {
-        posts = await Post.find({ user: _user._id }).populate("user", "username -_id");
+        posts = await Post.find({ user: _user._id }).populate([
+            {
+                path: "comments",
+                select: "comment",
+                populate: [
+                    {
+                        path: "user",
+                        select: "username -_id"
+                    },
+                    {
+                        path: "likes",
+                        select: "username -_id"
+                    }
+                ],
+            },
+            {
+                path: "user",
+                select: "username -_id"
+            }
+        ]);
     } else {
         res.status(400).json({ message: "Doesn't exists a user with that username" });
     }
