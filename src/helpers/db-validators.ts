@@ -1,3 +1,4 @@
+import Comment from "../models/Comment";
 import Post from "../models/Post";
 import Role from "../models/Role";
 import User from "../models/User"
@@ -20,6 +21,13 @@ export const postExists = async (id: string) => {
 export const postExistsByPublicId = async (public_id: string) => {
     const post = await Post.findOne({ public_id });
     if (!post) {
+        throw new Error(`The public id doesn't exists`);
+    }
+}
+
+export const commentExists = async (public_id: string) => {
+    const comment = await Comment.findOne({ public_id });
+    if (!comment) {
         throw new Error(`The public id doesn't exists`);
     }
 }

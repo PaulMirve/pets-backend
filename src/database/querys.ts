@@ -9,6 +9,9 @@ export const commentsQuery = {
             path: "dateCreated"
         },
         {
+            path: "public_id"
+        },
+        {
             path: "likeCount"
         },
         {

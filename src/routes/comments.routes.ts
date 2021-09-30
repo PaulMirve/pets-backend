@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { validateJWT } from '../middlewares/validate-jwt';
 import { validateFields } from '../middlewares/validate-fields';
 import { check } from 'express-validator';
-import { postExistsByPublicId } from '../helpers/db-validators';
+import { commentExists, postExistsByPublicId } from '../helpers/db-validators';
 import { postComment, putLikeComment } from '../controllers/comments.controller';
 
 const router = Router();
@@ -16,6 +16,7 @@ router.post('/:public_id', [
 
 router.put('/like/:public_id', [
     validateJWT,
+    check('public_id').custom(commentExists),
     validateFields
 ], putLikeComment);
 
