@@ -95,6 +95,10 @@ export const getPost = async (req: Request, res: Response) => {
         {
             path: "user",
             select: "username -_id"
+        },
+        {
+            path: "likes",
+            select: "username -_id"
         }
     ]);;
     res.json(post);
