@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Comment from '../models/Comment';
 import IComment from '../interfaces/Comment';
 import Post from "../models/Post";
+import { commentsQuery, userQuery } from '../database/querys';
 
 export const postComment = async (req: Request, res: Response) => {
     const { public_id } = req.params;
@@ -14,24 +15,8 @@ export const postComment = async (req: Request, res: Response) => {
     await comment.save();
     post?.comments.push(comment._id);
     await post?.save().then(t => t.populate([
-        {
-            path: "comments",
-            select: "comment",
-            populate: [
-                {
-                    path: "user",
-                    select: "username -_id"
-                },
-                {
-                    path: "likes",
-                    select: "username -_id"
-                }
-            ],
-        },
-        {
-            path: "user",
-            select: "username -_id"
-        }
+        commentsQuery,
+        userQuery
     ]));
     res.json(post);
 }

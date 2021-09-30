@@ -6,6 +6,7 @@ import { UploadedFile } from 'express-fileupload';
 import User from "../models/User";
 import sharp from 'sharp';
 import mongoose from 'mongoose';
+import { commentsQuery, userQuery } from '../database/querys';
 
 export const postPost = async (req: Request, res: Response) => {
     cloudinary.config({
@@ -50,22 +51,9 @@ export const getPosts = async (req: Request, res: Response) => {
     const [count, posts] = await Promise.all([
         Post.countDocuments({ active: true }),
         Post.find({ active: true }).skip(Number(offset)).limit(Number(limit))
-            .populate('user', "username -_id")
+            .populate(userQuery)
             .populate("likes", "username -_id")
-            .populate({
-                path: "comments",
-                select: "comment",
-                populate: [
-                    {
-                        path: "user",
-                        select: "username -_id"
-                    },
-                    {
-                        path: "likes",
-                        select: "username -_id"
-                    }
-                ],
-            })
+            .populate(commentsQuery)
             .sort({ dateCreated: 'desc' })
     ]);
 
@@ -78,24 +66,8 @@ export const getPosts = async (req: Request, res: Response) => {
 export const getPost = async (req: Request, res: Response) => {
     const { public_id } = req.params;
     const post = await Post.findOne({ public_id }).populate([
-        {
-            path: "comments",
-            select: "comment",
-            populate: [
-                {
-                    path: "user",
-                    select: "username -_id"
-                },
-                {
-                    path: "likes",
-                    select: "username -_id"
-                }
-            ],
-        },
-        {
-            path: "user",
-            select: "username -_id"
-        },
+        userQuery,
+        commentsQuery,
         {
             path: "likes",
             select: "username -_id"
@@ -110,24 +82,8 @@ export const getPostByUser = async (req: Request, res: Response) => {
     let posts: IPost[] = [];
     if (_user) {
         posts = await Post.find({ user: _user._id }).populate([
-            {
-                path: "comments",
-                select: "comment",
-                populate: [
-                    {
-                        path: "user",
-                        select: "username -_id"
-                    },
-                    {
-                        path: "likes",
-                        select: "username -_id"
-                    }
-                ],
-            },
-            {
-                path: "user",
-                select: "username -_id"
-            }
+            commentsQuery,
+            userQuery
         ]);
     } else {
         res.status(400).json({ message: "Doesn't exists a user with that username" });
