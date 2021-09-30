@@ -6,7 +6,7 @@ import { UploadedFile } from 'express-fileupload';
 import User from "../models/User";
 import sharp from 'sharp';
 import mongoose from 'mongoose';
-import { commentsQuery, userQuery } from '../database/querys';
+import { commentsQuery, userQuery, likesQuery } from '../database/querys';
 
 export const postPost = async (req: Request, res: Response) => {
     cloudinary.config({
@@ -104,11 +104,18 @@ export const putLike = async (req: Request, res: Response) => {
     const post = await Post.findOne({ public_id });
     let currenPost: IPost;
     if (post?.likes.some((user: mongoose.Types.ObjectId) => user.equals(req.currentUser._id))) {
-        currenPost = await Post.findOneAndUpdate({ public_id }, { $inc: { likeCount: -1 }, $pull: { likes: req.currentUser._id } }, { new: true });
+        currenPost = await Post.findOneAndUpdate({ public_id }, { $inc: { likeCount: -1 }, $pull: { likes: req.currentUser._id } }, { new: true }).populate([
+            userQuery,
+            likesQuery,
+            commentsQuery
+        ]);
     } else {
-        currenPost = await Post.findOneAndUpdate({ public_id }, { $inc: { likeCount: 1 }, $addToSet: { likes: req.currentUser } }, { new: true });
+        currenPost = await Post.findOneAndUpdate({ public_id }, { $inc: { likeCount: 1 }, $addToSet: { likes: req.currentUser } }, { new: true }).populate([
+            userQuery,
+            likesQuery,
+            commentsQuery
+        ]);
     }
-
     res.json(currenPost);
 }
 

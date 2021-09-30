@@ -1,6 +1,6 @@
 export const commentsQuery = {
     path: "comments",
-    select: "comment",
+    select: "comment -_id",
     options: {
         sort: { "dateCreated": -1 }
     },
@@ -24,5 +24,15 @@ export const commentsQuery = {
 
 export const userQuery = {
     path: "user",
+    select: "username -_id"
+}
+
+export const likesQuery = {
+    path: "likes",
+    select: "username -_id"
+}
+
+export const postQuery = {
+    path: "post",
     select: "username -_id"
 }

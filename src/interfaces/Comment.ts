@@ -4,6 +4,7 @@ import { Document } from 'mongoose';
 import mongoose from 'mongoose';
 
 export default interface Comment extends Document {
+    public_id: string,
     comment: string,
     dateCreated: Date,
     likeCount: number,

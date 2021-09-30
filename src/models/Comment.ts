@@ -2,6 +2,10 @@ import { Schema, model } from "mongoose";
 import Comment from '../interfaces/Comment';
 
 const CommentSchema: Schema = new Schema({
+    public_id: {
+        type: String,
+        required: [true, 'Public id is required']
+    },
     comment: {
         type: String,
         required: [true, 'Comment is needed']
@@ -35,5 +39,10 @@ const CommentSchema: Schema = new Schema({
         default: true
     }
 });
+
+CommentSchema.methods.toJSON = function () {
+    const { _id, __v, active, ...data } = this.toObject();
+    return data;
+}
 
 export default model<Comment>('Comment', CommentSchema);
