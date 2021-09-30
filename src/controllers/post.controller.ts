@@ -77,7 +77,26 @@ export const getPosts = async (req: Request, res: Response) => {
 
 export const getPost = async (req: Request, res: Response) => {
     const { public_id } = req.params;
-    const post = await Post.findOne({ public_id }).populate("user", "username -_id");
+    const post = await Post.findOne({ public_id }).populate([
+        {
+            path: "comments",
+            select: "comment",
+            populate: [
+                {
+                    path: "user",
+                    select: "username -_id"
+                },
+                {
+                    path: "likes",
+                    select: "username -_id"
+                }
+            ],
+        },
+        {
+            path: "user",
+            select: "username -_id"
+        }
+    ]);;
     res.json(post);
 }
 
