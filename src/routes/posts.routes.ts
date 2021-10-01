@@ -5,7 +5,7 @@ import { validateFields } from '../middlewares/validate-fields';
 import { check } from 'express-validator';
 import { validateFile } from '../middlewares/validate-file';
 import { userHasRole } from '../middlewares/check-roles';
-import { postExists, postExistsByPublicId } from '../helpers/db-validators';
+import { postExists, postExistsByPublicId, userExistsByUsername } from '../helpers/db-validators';
 const router = Router();
 
 router.post('/', [
@@ -22,7 +22,10 @@ router.get('/:public_id', [
     validateFields
 ], getPost);
 
-router.get('/u/:username', [], getPostByUser);
+router.get('/u/:username', [
+    check('username').custom(userExistsByUsername),
+    validateFields
+], getPostByUser);
 
 
 router.put('/:public_id', [

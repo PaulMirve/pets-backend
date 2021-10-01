@@ -11,6 +11,13 @@ export const userExists = async (id: string) => {
     }
 }
 
+export const userExistsByUsername = async (username: string) => {
+    const user = await User.findOne({ username });
+    if(!user){
+        throw new Error(`The user ${username} doesn't exists`);
+    }
+}
+
 export const postExists = async (id: string) => {
     const post = await Post.findById(id);
     if (!post) {
