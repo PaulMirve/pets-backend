@@ -83,7 +83,8 @@ export const getPostByUser = async (req: Request, res: Response) => {
     if (_user) {
         posts = await Post.find({ user: _user._id }).populate([
             commentsQuery,
-            userQuery
+            userQuery,
+            likesQuery
         ]);
     } else {
         res.status(400).json({ message: "Doesn't exists a user with that username" });
