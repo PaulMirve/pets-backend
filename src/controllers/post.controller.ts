@@ -19,15 +19,9 @@ export const postPost = async (req: Request, res: Response) => {
     const post = new Post({ description, user: req.currentUser });
     try {
         if (req.files) {
-            let outputImage = "croppedImage.jpg";
+            let outputImage = "\\tmp\\croppedImage.jpg";
             const file: UploadedFile = req.files["file"] as UploadedFile;
             const { tempFilePath } = file;
-            // await sharp(tempFilePath).extract({
-            //     width: Math.trunc(Number(1000)),
-            //     height: Math.trunc(Number(800)),
-            //     left: Math.trunc(Number(left)),
-            //     top: Math.trunc(Number(top))
-            // }).toFile(outputImage);
             await sharp(tempFilePath).resize({
                 width: 400,
                 height: 400
@@ -35,7 +29,6 @@ export const postPost = async (req: Request, res: Response) => {
             const { secure_url, public_id } = await cloudinary.uploader.upload(outputImage);
             post.public_id = public_id;
             post.img = secure_url;
-
         }
 
         await post.save();
