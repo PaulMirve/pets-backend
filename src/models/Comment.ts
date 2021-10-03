@@ -12,7 +12,7 @@ const CommentSchema: Schema = new Schema({
     },
     dateCreated: {
         type: Date,
-        default: new Date()
+        default: Date.now
     },
     likeCount: {
         type: Number,
