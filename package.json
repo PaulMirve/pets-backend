@@ -9,7 +9,8 @@
     "build": "tsc",
     "clean": "rm -rf build",
     "start": "node build/src",
-    "clean:windows": "del build"
+    "clean:windows": "del build",
+    "postinstall": "npm run build"
   },
   "keywords": [],
   "author": "",
