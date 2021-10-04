@@ -16,12 +16,14 @@ export const postComment = async (req: Request, res: Response) => {
     const comment = new Comment(data);
     comment.public_id = uuidv4();
     await comment.save();
+    await comment.populate([
+        userQuery,
+        likesQuery,
+        postQuery
+    ]);
     post?.comments.push(comment._id);
-    await post?.save().then(t => t.populate([
-        commentsQuery,
-        userQuery
-    ]));
-    res.json(post);
+    await post?.save();
+    res.json(comment);
 }
 
 export const putLikeComment = async (req: Request, res: Response) => {

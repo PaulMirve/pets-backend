@@ -37,5 +37,5 @@ export const likesQuery = {
 
 export const postQuery = {
     path: "post",
-    select: "username -_id"
+    select: "public_id -_id"
 }
