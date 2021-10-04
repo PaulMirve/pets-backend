@@ -6,11 +6,13 @@ import { check } from 'express-validator';
 import { validateFile } from '../middlewares/validate-file';
 import { userHasRole } from '../middlewares/check-roles';
 import { postExists, postExistsByPublicId, userExistsByUsername } from '../helpers/db-validators';
+import validateExtensions from '../middlewares/validate-extensions';
 const router = Router();
 
 router.post('/', [
     validateJWT,
     validateFile,
+    validateExtensions,
     check('description', 'The description is needed').not().isEmpty(),
     validateFields
 ], postPost);
