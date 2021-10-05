@@ -46,6 +46,7 @@ router.put('/like/:public_id', [
 router.put('/c/:public_id', [
     validateJWT,
     check("public_id").custom(postExistsByPublicId),
+    check("description", "The description is required").not().isEmpty(),
     validateFields
 ], putDescription);
 

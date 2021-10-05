@@ -6,7 +6,7 @@ import { UploadedFile } from 'express-fileupload';
 import User from "../models/User";
 import sharp from 'sharp';
 import mongoose from 'mongoose';
-import { commentsQuery, userQuery, likesQuery } from '../database/querys';
+import { commentsQuery, userQuery, likesQuery, postQuery } from '../database/querys';
 import Comment from "../models/Comment";
 
 export const postPost = async (req: Request, res: Response) => {
@@ -117,7 +117,11 @@ export const putLike = async (req: Request, res: Response) => {
 export const putDescription = async (req: Request, res: Response) => {
     const { public_id } = req.params;
     const { description } = req.body;
-    const post = await Post.findOneAndUpdate({ public_id }, { description }, { new: true });
+    const post = await Post.findOneAndUpdate({ public_id }, { description }, { new: true }).populate([
+        userQuery,
+        likesQuery,
+        commentsQuery
+    ]);
     res.json(post);
 }
 
