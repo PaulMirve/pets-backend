@@ -7,6 +7,7 @@ import User from "../models/User";
 import sharp from 'sharp';
 import mongoose from 'mongoose';
 import { commentsQuery, userQuery, likesQuery } from '../database/querys';
+import Comment from "../models/Comment";
 
 export const postPost = async (req: Request, res: Response) => {
     cloudinary.config({
@@ -113,8 +114,18 @@ export const putLike = async (req: Request, res: Response) => {
     res.json(currenPost);
 }
 
-export const deletePost = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const post = await Post.findByIdAndUpdate(id, { active: false }, { new: true });
+export const putDescription = async (req: Request, res: Response) => {
+    const { public_id } = req.params;
+    const { description } = req.body;
+    const post = await Post.findOneAndUpdate({ public_id }, { description }, { new: true });
     res.json(post);
+}
+
+export const deletePost = async (req: Request, res: Response) => {
+    const { public_id } = req.params;
+    const post = await Post.findOne({ public_id });
+    await Comment.deleteMany({ post: post?._id });
+    await cloudinary.uploader.destroy(public_id);
+    await Post.findOneAndDelete({ public_id }, { active: false });
+    res.json(public_id);
 }

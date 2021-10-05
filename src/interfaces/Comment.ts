@@ -10,8 +10,6 @@ export default interface Comment extends Document {
     likeCount: number,
     likes: mongoose.Types.ObjectId[],
     user: User,
-    post: (Post & {
-        _id: any;
-    }) | null,
+    post: mongoose.Types.ObjectId,
     active: boolean
 }

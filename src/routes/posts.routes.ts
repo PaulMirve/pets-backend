@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getPosts, postPost, getPost, putPost, deletePost, getPostByUser, putLike } from '../controllers/post.controller';
+import { getPosts, postPost, getPost, putPost, deletePost, getPostByUser, putLike, putDescription } from '../controllers/post.controller';
 import { validateJWT } from '../middlewares/validate-jwt';
 import { validateFields } from '../middlewares/validate-fields';
 import { check } from 'express-validator';
@@ -43,10 +43,15 @@ router.put('/like/:public_id', [
     validateFields
 ], putLike);
 
-router.delete('/:id', [
+router.put('/c/:public_id', [
     validateJWT,
-    check("id", "The id is not a valid id").isMongoId(),
-    check("id").custom(postExists),
+    check("public_id").custom(postExistsByPublicId),
+    validateFields
+], putDescription);
+
+router.delete('/:public_id', [
+    validateJWT,
+    check("public_id").custom(postExistsByPublicId),
     validateFields
 ], deletePost);
 

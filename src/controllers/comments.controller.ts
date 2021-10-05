@@ -12,7 +12,7 @@ export const postComment = async (req: Request, res: Response) => {
 
     data.user = req.currentUser;
     const post = await Post.findOne({ public_id })
-    data.post = post;
+    data.post = post?._id;
     const comment = new Comment(data);
     comment.public_id = uuidv4();
     await comment.save();
