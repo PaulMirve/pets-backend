@@ -25,7 +25,7 @@ export const postPost = async (req: Request, res: Response) => {
             await sharp(tempFilePath).resize({
                 width: 400,
                 height: 400
-            }).toFile(outputImage);
+            }).withMetadata().toFile(outputImage);
             const { secure_url, public_id } = await cloudinary.uploader.upload(outputImage);
             post.public_id = public_id;
             post.img = secure_url;
