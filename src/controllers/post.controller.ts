@@ -79,7 +79,7 @@ export const getPostByUser = async (req: Request, res: Response) => {
             commentsQuery,
             userQuery,
             likesQuery
-        ]);
+        ]).sort({ dateCreated: 'desc' });
     } else {
         res.status(400).json({ message: "Doesn't exists a user with that username" });
     }
